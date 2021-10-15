@@ -5,22 +5,6 @@ import { jobsConfig } from './config/serverless/parts/jobs';
 import { restApiCorsConfig } from './config/serverless/parts/rest-api-cors';
 import { usersConfig } from './config/serverless/parts/users';
 import { joinParts } from './config/serverless/utils';
-import { connectDb } from './database/mongoDbConnect';
-
-connectDb()
-  .then(() => {
-    console.log('Connection success.');
-    // addImagesToDb(`http://${hostname}:${PORT}`)
-    //   .then(() => {
-    //     console.log('Images add to db');
-    //   })
-    //   .catch(e => {
-    //     console.log(e);
-    //   })
-  })
-  .catch((e) => {
-    console.log(e);
-  });
 
 const masterConfig: AWS = {
   service: 'template-sls',

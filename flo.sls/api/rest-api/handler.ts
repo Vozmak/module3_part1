@@ -11,6 +11,7 @@ import { errorHandler } from '@helper/rest-api/error-handler';
 import { APIGatewayLambdaEvent } from '@interfaces/api-gateway-lambda.interface';
 import { LeanDocument } from 'mongoose';
 import * as parser from 'lambda-multipart-parser';
+import { connectMongo } from '../../database/mongoDbConnect';
 
 interface Path {
   path: string | null;
@@ -35,6 +36,7 @@ export const getGallery: Handler<APIGatewayLambdaEvent<null>, any> = async (even
   log(event);
 
   try {
+    const mongoose = await connectMongo();
     const querystring = event.query;
     const page: string = querystring?.page || '1';
     const limit: string = querystring?.limit || '0';
@@ -72,6 +74,8 @@ export const getGallery: Handler<APIGatewayLambdaEvent<null>, any> = async (even
 
     const images = pathImages.map((img) => img.path);
 
+    await mongoose.connection.close();
+
     return {
       objects: images,
       page: numberPage,
@@ -86,6 +90,7 @@ export const addImageGallery: Handler<APIGatewayLambdaEvent<null>, any> = async 
   // log(event);
 
   try {
+    const mongoose = await connectMongo();
     // @ts-ignore
     const result = await parser.parse(event);
 
@@ -95,6 +100,8 @@ export const addImageGallery: Handler<APIGatewayLambdaEvent<null>, any> = async 
 
     // @ts-ignore
     await saveImages(result, event.requestContext.authorizer.claims._id);
+
+    await mongoose.connection.close();
 
     return 'Картинки успешно загружены';
   } catch (error) {
@@ -106,6 +113,8 @@ export const signUp: Handler<APIGatewayLambdaEvent<User>, any> = async (event) =
   log(event);
 
   try {
+    const mongoose = await connectMongo();
+
     const user = event.body;
     if (!user || !user.email || !user.password) {
       throw new HttpError(401, 'Error', 'Не указаны данные');
@@ -122,6 +131,8 @@ export const signUp: Handler<APIGatewayLambdaEvent<User>, any> = async (event) =
 
     await Users.create({ email: user.email, password: user.password });
 
+    await mongoose.connection.close();
+
     return {
       message: `${user.email} успешно зарегистрирован!`,
     };
@@ -134,6 +145,8 @@ export const login: Handler<APIGatewayLambdaEvent<User>, any> = async (event) =>
   log(event);
 
   try {
+    const mongoose = await connectMongo();
+
     const user = event.body;
 
     if (!user || !user.email || !user.password) {
@@ -147,6 +160,8 @@ export const login: Handler<APIGatewayLambdaEvent<User>, any> = async (event) =>
     const validate = await verifyUser.isValidPassword(user.password);
 
     if (!validate) throw new HttpError(401, 'AuthError', 'Неверный пароль');
+
+    await mongoose.connection.close();
 
     return { token: getToken(verifyUser) };
   } catch (error) {
