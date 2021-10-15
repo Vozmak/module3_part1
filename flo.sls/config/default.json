@@ -1,0 +1,7 @@
+{
+  "PORT": 2000,
+  "hostname": "127.0.0.1",
+  "connectDb": "mongodb+srv://VOZMAK:JkJkJtDf1996@database.o7rur.mongodb.net/Module2_Part4_db?retryWrites=true&w=majority",
+  "saltRounds": 10,
+  "secret": "vozmak"
+}
