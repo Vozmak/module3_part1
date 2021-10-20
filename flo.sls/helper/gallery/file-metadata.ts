@@ -8,6 +8,7 @@ const parse = (data) => {
   const object = plist.parse(data);
   const returnValue = {};
 
+  // eslint-disable-next-line prefer-const
   for (let [key, value] of Object.entries(object)) {
     key = key.replace(/^kMDItem/, '').replace(/_/g, '');
     key = key.startsWith('FS') ? key.replace(/^FS/, 'fs') : key[0].toLowerCase() + key.slice(1);

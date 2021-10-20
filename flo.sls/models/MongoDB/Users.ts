@@ -3,9 +3,9 @@ interface User {
   password: string;
 }
 
+import { getEnv } from '@helper/environment';
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import * as config from 'config';
 
 const UserScheme = new mongoose.Schema<User>({
   email: {
@@ -23,7 +23,7 @@ const UserScheme = new mongoose.Schema<User>({
 UserScheme.pre('save', async function () {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   // const user = this;
-  this.password = await bcrypt.hash(this.password, config.get('saltRounds'));
+  this.password = await bcrypt.hash(this.password, Number(getEnv('SALTROUNDS', true)));
 });
 
 UserScheme.methods.isValidPassword = async function (password: string) {
@@ -32,4 +32,5 @@ UserScheme.methods.isValidPassword = async function (password: string) {
   return await bcrypt.compare(password, user.password);
 };
 
-export const Users = mongoose.models.Users || mongoose.model('Users', UserScheme, 'Users');
+// export const Users = mongoose.models.Users || mongoose.model('Users', UserScheme, 'Users');
+export { UserScheme };

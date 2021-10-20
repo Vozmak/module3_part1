@@ -100,7 +100,6 @@
     "aws-sdk": "^2.893.0",
     "axios": "^0.21.3",
     "bcrypt": "^5.0.1",
-    "config": "^3.3.6",
     "dotenv": "^8.6.0",
     "dynamoose": "^2.7.3",
     "jsonwebtoken": "^8.5.1",

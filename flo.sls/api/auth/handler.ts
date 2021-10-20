@@ -1,5 +1,6 @@
 // Remove example
 
+import { getEnv } from '@helper/environment';
 import { log } from '@helper/logger';
 import {
   APIGatewayAuthorizerSimpleResult,
@@ -8,7 +9,6 @@ import {
 import { APIGatewayAuthorizerResult, APIGatewayTokenAuthorizerWithContextHandler } from 'aws-lambda';
 import { Handler } from 'aws-lambda/handler';
 import * as jwt from 'jsonwebtoken';
-import * as config from 'config';
 
 const UNAUTHORIZED = new Error('Unauthorized');
 
@@ -83,7 +83,7 @@ export const authentication: APIGatewayTokenAuthorizerWithContextHandler<Record<
     throw UNAUTHORIZED;
   }
 
-  await jwt.verify(event.authorizationToken.slice(7), config.get('secret'));
+  await jwt.verify(event.authorizationToken.slice(7), getEnv('SECRET', true));
 
   return generatePolicy('user', 'Allow', '*', {});
 };

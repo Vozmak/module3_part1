@@ -1,9 +1,11 @@
-import { Images } from '@models/MongoDB';
+import { ImageScheme } from '@models/MongoDB';
 import { writeFile } from 'fs';
 import { MultipartRequest } from 'lambda-multipart-parser';
-import { fileMetadataAsync } from '@helper/rest-api/file-metadata';
+import { fileMetadataAsync } from '@helper/gallery/file-metadata';
+import * as mongoose from 'mongoose';
 
-async function saveImages(files: MultipartRequest, _id): Promise<void> {
+async function saveImages(files: MultipartRequest, _id: string): Promise<void> {
+  const Images = mongoose.model('Images', ImageScheme, 'Images');
   const filesArray = files.files;
   try {
     for (const img of filesArray) {
