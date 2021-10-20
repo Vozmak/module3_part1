@@ -32,7 +32,7 @@ export const galleryConfig: AWSPartitial = {
               template: "$input.json('$')",
             },
             authorizer: {
-              name: 'exampleAuthorizerRestApi',
+              name: 'AuthorizerRestApi',
             },
           },
         },
@@ -56,13 +56,13 @@ export const galleryConfig: AWSPartitial = {
               template: "$input.json('$')",
             },
             authorizer: {
-              name: 'exampleAuthorizerRestApi',
+              name: 'AuthorizerRestApi',
             },
           },
         },
       ],
     },
-    exampleAuthorizerRestApi: {
+    AuthorizerRestApi: {
       handler: 'api/auth/handler.authentication',
       memorySize: 128,
     },
