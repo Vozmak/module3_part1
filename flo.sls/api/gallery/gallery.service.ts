@@ -1,5 +1,5 @@
 import { HttpBadRequestError, HttpInternalServerError } from '@errors/http';
-import { saveImages } from '@helper/rest-api/saveImages';
+import { saveImages } from '@helper/gallery/saveImages';
 import { ImageScheme, UserScheme } from '@models/MongoDB';
 import { checkMongoConnect } from '@services/mongoDbConnect';
 import { MultipartRequest } from 'lambda-multipart-parser';
