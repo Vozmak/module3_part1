@@ -1,8 +1,6 @@
 interface Image {
   path: string;
-  metadata: {
-    [k: string]: any;
-  };
+  metadata: ObjectConstructor;
   imgCreator: mongoose.Schema.Types.ObjectId;
 }
 
@@ -23,5 +21,6 @@ const ImageScheme = new mongoose.Schema<Image>({
   },
 });
 
-// export const Images = mongoose.models.Images || mongoose.model('Images', ImageScheme, 'Images');
-export { ImageScheme };
+const Images = mongoose.models.Images || mongoose.model('Images', ImageScheme, 'Images');
+
+export { Images };

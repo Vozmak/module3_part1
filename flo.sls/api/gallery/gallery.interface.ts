@@ -19,3 +19,7 @@ export interface Query {
   limit?: string;
   filter?: string;
 }
+
+export interface Filter {
+  imgCreator?: Schema.Types.ObjectId;
+}

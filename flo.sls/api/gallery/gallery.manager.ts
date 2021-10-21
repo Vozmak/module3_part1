@@ -1,4 +1,4 @@
-import { HttpError } from '@errors/http/http-error';
+import { HttpBadRequestError } from '@errors/http';
 import { MultipartRequest } from 'lambda-multipart-parser';
 import { Gallery, Query } from './gallery.interface';
 import { GalleryService } from './gallery.service';
@@ -23,7 +23,7 @@ export class GalleryManager {
 
   async uploadImages(images: MultipartRequest, userUploadId: string): Promise<string> {
     if (images.files.length === 0) {
-      throw new HttpError(400, 'Error', 'Нет изображений для загрузки');
+      throw new HttpBadRequestError('Нет изображений для загрузки');
     }
 
     return this.service.uploadImages(images, userUploadId);

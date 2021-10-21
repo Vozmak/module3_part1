@@ -32,5 +32,6 @@ UserScheme.methods.isValidPassword = async function (password: string) {
   return await bcrypt.compare(password, user.password);
 };
 
-// export const Users = mongoose.models.Users || mongoose.model('Users', UserScheme, 'Users');
-export { UserScheme };
+const Users = mongoose.models.Users || mongoose.model('Users', UserScheme, 'Users');
+
+export { Users };
