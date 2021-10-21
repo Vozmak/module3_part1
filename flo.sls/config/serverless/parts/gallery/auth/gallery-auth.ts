@@ -1,21 +1,9 @@
-import { AWSPartitial } from '../types';
+import { AWSPartitial } from '../../../types';
 
 export const authConfig: AWSPartitial = {
-  provider: {
-    httpApi: {
-      authorizers: {
-        exampleAuthorizer: {
-          type: 'request',
-          enableSimpleResponses: true,
-          functionName: 'exampleAuthorizerHttpApi',
-          identitySource: '$request.header.Authorization',
-        },
-      },
-    },
-  },
   functions: {
     signUp: {
-      handler: 'api/gallery/auth/signup/handler.signUp',
+      handler: 'api/gallery/auth/handler.signUp',
       memorySize: 128,
       events: [
         {
@@ -36,7 +24,7 @@ export const authConfig: AWSPartitial = {
       ],
     },
     login: {
-      handler: 'api/gallery/auth/login/handler.login',
+      handler: 'api/gallery/auth/handler.login',
       memorySize: 128,
       events: [
         {
@@ -55,10 +43,6 @@ export const authConfig: AWSPartitial = {
           },
         },
       ],
-    },
-    exampleAuthorizerRestApi: {
-      handler: 'api/auth/handler.authentication',
-      memorySize: 128,
     },
   },
 };

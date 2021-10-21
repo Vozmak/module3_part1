@@ -1,11 +1,11 @@
 import { HttpBadRequestError, HttpInternalServerError } from '@errors/http';
-import { saveImages } from '@helper/gallery/saveImages';
-import { ImageScheme, UserScheme } from '@models/MongoDB';
-import { checkMongoConnect } from '@services/mongoDbConnect';
-import { MultipartRequest } from 'lambda-multipart-parser';
+import { fileMetadataAsync } from '@helper/gallery/file-metadata';
+import { Images, Users } from '@models/MongoDB';
+import { dbConnect } from '@services/mongoDbConnect';
+import { writeFile } from 'fs';
+import { MultipartFile, MultipartRequest } from 'lambda-multipart-parser';
 import { LeanDocument } from 'mongoose';
-import * as mongoose from 'mongoose';
-import { Gallery, Path, User } from './gallery.interface';
+import { Filter, Gallery, Path, User } from './gallery.interface';
 
 export class GalleryService {
   async getImages(page: number, limit: number, filter: string): Promise<Gallery> {
@@ -14,11 +14,9 @@ export class GalleryService {
     let images: Array<string | null>;
 
     try {
-      await checkMongoConnect;
-      const Users = mongoose.models.Users || mongoose.model('Users', UserScheme, 'Users');
-      const Images = mongoose.model('Images', ImageScheme, 'Images');
+      await dbConnect;
 
-      let findFilter;
+      let findFilter: Filter;
 
       if (filter !== 'all') {
         const id: User = await Users.findOne({ email: filter }).lean();
@@ -38,12 +36,12 @@ export class GalleryService {
         .skip((page - 1) * limit)
         .limit(limit);
 
-      const totalCount = await Images.count(findFilter);
+      const totalCount: number = await Images.count(findFilter);
       total = Math.ceil(totalCount / (limit ? limit : totalCount));
 
-      if (page > total || page < 1) throw new HttpBadRequestError(`Страница не найдена`);
-
       if (pathImages.length === 0) throw new HttpBadRequestError(`Пользователь ${filter} загрузил 0 картинок`);
+
+      if (page > total || page < 1) throw new HttpBadRequestError(`Страница не найдена`);
 
       images = pathImages.map((img) => img.path);
     } catch (e) {
@@ -60,13 +58,37 @@ export class GalleryService {
 
   async uploadImages(images: MultipartRequest, userUploadId: string): Promise<string> {
     try {
-      await checkMongoConnect;
+      await dbConnect;
       // @ts-ignore
-      await saveImages(images, userUploadId);
+      await this.saveImages(images, userUploadId);
     } catch (e) {
       throw new HttpInternalServerError(e.message);
     }
 
     return 'Изображения успешно загружены.';
+  }
+
+  async saveImages(files: MultipartRequest, _id: string): Promise<void> {
+    const filesArray = files.files;
+    try {
+      for (const img of filesArray) {
+        const findImg: MultipartFile = await Images.findOne({ path: `/images/${img.filename}` });
+        if (findImg) continue;
+
+        await writeFile(`images/${img.filename}`, img.content, (err) => {
+          if (err) {
+            console.log(err);
+          }
+        });
+
+        await Images.create({
+          path: `/images/${img.filename}`,
+          metadata: await fileMetadataAsync(`images/${img.filename}`),
+          imgCreator: _id,
+        });
+      }
+    } catch (err) {
+      return err;
+    }
   }
 }

@@ -6,14 +6,17 @@ const url: string = getEnv('MONGODB', true);
 
 mongoose.connect(url);
 
-const checkMongoConnect = mongoose.connection;
+export const dbConnect = new Promise((resolve, reject) => {
+  const checkMongoConnect = mongoose.connection;
 
-checkMongoConnect.on('error', (error) => {
-  log(error);
+  checkMongoConnect.on('error', (error) => {
+    log(error);
+    reject(error);
+  });
+
+  checkMongoConnect.on('open', () => {
+    log('Connect to DB success.');
+  });
+
+  resolve(checkMongoConnect);
 });
-
-checkMongoConnect.on('open', () => {
-  log('Connect to DB success.');
-});
-
-export { checkMongoConnect };

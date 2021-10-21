@@ -1,18 +1,6 @@
-import { AWSPartitial } from '../types';
+import { AWSPartitial } from '../../types';
 
 export const galleryConfig: AWSPartitial = {
-  provider: {
-    httpApi: {
-      authorizers: {
-        exampleAuthorizer: {
-          type: 'request',
-          enableSimpleResponses: true,
-          functionName: 'exampleAuthorizerHttpApi',
-          identitySource: '$request.header.Authorization',
-        },
-      },
-    },
-  },
   functions: {
     getGallery: {
       handler: 'api/gallery/handler.getGallery',
@@ -32,7 +20,7 @@ export const galleryConfig: AWSPartitial = {
               template: "$input.json('$')",
             },
             authorizer: {
-              name: 'AuthorizerRestApi',
+              name: 'GalleryAuthorizerRestApi',
             },
           },
         },
@@ -56,13 +44,13 @@ export const galleryConfig: AWSPartitial = {
               template: "$input.json('$')",
             },
             authorizer: {
-              name: 'AuthorizerRestApi',
+              name: 'GalleryAuthorizerRestApi',
             },
           },
         },
       ],
     },
-    AuthorizerRestApi: {
+    GalleryAuthorizerRestApi: {
       handler: 'api/auth/handler.authentication',
       memorySize: 128,
     },
